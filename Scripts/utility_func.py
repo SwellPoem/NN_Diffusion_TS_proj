@@ -95,10 +95,10 @@ def data_generation(no, seq_len, dim, seed=1234):
         for k in range(dim):
 
             # Randomly drawn frequency and phase for local data
-            freq_local = np.random.uniform(0, 0.1)            
+            freq_local = np.random.uniform(0, 0.3)            
             phase_local = np.random.uniform(0, 0.1)
             # Randomly drawn frequency and phase for global data
-            freq_global = np.random.uniform(0, 0.01)            
+            freq_global = np.random.uniform(0, 0.03)            
             phase_global = np.random.uniform(0, 0.01)
             # Generate sine signal based on the drawn frequency and phase for local and global data
             temp_data1 = [np.sin(freq_local * j + phase_local) for j in range(seq_len)]
