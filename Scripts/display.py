@@ -25,8 +25,8 @@ def display_scores(results):
 # output: plot
 def visualization(ori_data, generated_data, analysis, save_path, compare=3000):
     # Analysis sample size (for faster computation)
-    anal_sample_no = min([compare, ori_data.shape[0]])
-    idx = np.random.permutation(ori_data.shape[0])[:anal_sample_no]
+    n_anal_sample = min([compare, ori_data.shape[0]])
+    idx = np.random.permutation(ori_data.shape[0])[:n_anal_sample]
 
     # Data preprocessing
     # ori_data = np.asarray(ori_data)
@@ -37,7 +37,7 @@ def visualization(ori_data, generated_data, analysis, save_path, compare=3000):
 
     no, seq_len, dim = ori_data.shape
 
-    for i in range(anal_sample_no):
+    for i in range(n_anal_sample):
         if (i == 0):
             prep_data = np.reshape(np.mean(ori_data[0, :, :], 1), [1, seq_len])
             prep_data_hat = np.reshape(np.mean(generated_data[0, :, :], 1), [1, seq_len])
@@ -46,7 +46,7 @@ def visualization(ori_data, generated_data, analysis, save_path, compare=3000):
             prep_data_hat = np.concatenate((prep_data_hat, np.reshape(np.mean(generated_data[i, :, :], 1), [1, seq_len])))
 
     # Visualization parameter
-    colors = ["red" for i in range(anal_sample_no)] + ["blue" for i in range(anal_sample_no)]
+    colors = ["red" for i in range(n_anal_sample)] + ["blue" for i in range(n_anal_sample)]
 
     if analysis == 'tsne':
 
@@ -60,8 +60,8 @@ def visualization(ori_data, generated_data, analysis, save_path, compare=3000):
         # Plotting
         f, ax = plt.subplots(1)
 
-        plt.scatter(tsne_results[:anal_sample_no, 0], tsne_results[:anal_sample_no, 1], c=colors[:anal_sample_no], alpha=0.2, label="Original")
-        plt.scatter(tsne_results[anal_sample_no:, 0], tsne_results[anal_sample_no:, 1], c=colors[anal_sample_no:], alpha=0.2, label="Synthetic")
+        plt.scatter(tsne_results[:n_anal_sample, 0], tsne_results[:n_anal_sample, 1], c=colors[:n_anal_sample], alpha=0.2, label="Original")
+        plt.scatter(tsne_results[n_anal_sample:, 0], tsne_results[n_anal_sample:, 1], c=colors[n_anal_sample:], alpha=0.2, label="Synthetic")
 
         ax.legend()
 
@@ -94,91 +94,7 @@ def visualization(ori_data, generated_data, analysis, save_path, compare=3000):
         plt.close()
 
 
-def plot_dirty_input(idx, size, x, save_path):
-    # dir = save_path + f'/figures/fig_{t}'
-    # os.makedirs(dir, exist_ok=True)
 
-    plt.figure(figsize=(18, 3))
-    for i in range(size):
-        plt.plot(x[idx, :, -i].cpu().flatten(), lw=2)
-    plt.grid(color='k', ls ='--', lw=1)
-    plt.title('Dirty Input', fontsize=24)
-    plt.tick_params('both', labelsize=18)
-    plt.ylim((-4, 2))
-    plt.savefig(save_path+f"dirty_input.png", dpi=300)
-    plt.show()
-
-def plot_original_data(idx, size, data, save_path):
-    # dir = save_path + f'/figures/fig_{t}'
-    # os.makedirs(dir, exist_ok=True)
-
-    plt.figure(figsize=(18, 3))
-    for i in range(size):
-        plt.plot(data[idx, :, -i].cpu().flatten(), lw=2)
-    plt.grid(color='k', ls ='--', lw=1)
-    plt.title('Original Data', fontsize=24)
-    plt.tick_params('both', labelsize=18)
-    plt.ylim((-4, 2))
-    plt.savefig(save_path+f"original.png", dpi=300)
-    plt.show()
-
-def plot_reconstruction(idx, size, trend, season, r, save_path):
-    # dir = save_path + f'/figures/fig_{t}'
-    # os.makedirs(dir, exist_ok=True)
-
-    plt.figure(figsize=(18, 3))
-    for i in range(size):
-        plt.plot((trend + season + r)[idx, :, -i].cpu().detach().numpy().flatten(), lw=2)
-    plt.grid(color='k', ls ='--', lw=1)
-    plt.title('Reconstruction', fontsize=24)
-    plt.tick_params('both', labelsize=18)
-    plt.ylim((-4, 2))
-    plt.savefig(save_path+f"reconstruction.png", dpi=300)
-    plt.show()
-
-def plot_original_season(idx, size, season_r, save_path):
-    plt.figure(figsize=(18, 3))
-    for i in range(size):
-        plt.plot(season_r[idx, :, -i].cpu().flatten(), lw=2)
-    plt.grid(color='k', ls ='--', lw=1)
-    plt.title('Original Season', fontsize=24)
-    plt.tick_params('both', labelsize=18)
-    plt.ylim((-2, 1))
-    plt.savefig(save_path+f"orig_season.png", dpi=300)
-    plt.show()
-
-def plot_learnt_season(idx, size, season, save_path):
-    plt.figure(figsize=(18, 3))
-    for i in range(size):
-        plt.plot(season[idx, :, -i].cpu().detach().numpy().flatten(), lw=2)
-    plt.grid(color='k', ls ='--', lw=1)
-    plt.title('Learnt Season', fontsize=24)
-    plt.tick_params('both', labelsize=18)
-    plt.ylim((-2, 1))
-    plt.savefig(save_path+f"learnt_season.png", dpi=300)
-    plt.show()
-
-def plot_original_trend(idx, size, trend_r, save_path):
-    plt.figure(figsize=(18, 3))
-    for i in range(size):
-        plt.plot(trend_r[idx, :, -i].cpu().flatten(), lw=2)
-    plt.grid(color='k', ls ='--', lw=1)
-    plt.title('Original Trend', fontsize=24)
-    plt.tick_params('both', labelsize=18)
-    plt.ylim((-2, 0))
-    plt.savefig(save_path+f"orig_trend.png", dpi=300)
-    plt.show()
-
-def plot_learnt_trend(idx, size, trend, save_path):
-    plt.figure(figsize=(18, 3))
-    for i in range(size):
-        plt.plot(trend[idx, :, -i].cpu().detach().numpy().flatten(), lw=2)
-    plt.grid(color='k', ls ='--', lw=1)
-    plt.title('Learnt Trend', fontsize=24)
-    plt.tick_params('both', labelsize=18)
-    plt.ylim((-2.5, 0))
-    plt.savefig(save_path+f"learnt_trend.png", dpi=300)
-    plt.show()
 
 if __name__ == '__main__':
    pass

@@ -19,37 +19,6 @@ def cycle(dl):
         for data in dl:
             yield data
 
-# class Trainer(object):
-#     def __init__(self, config, args, model, dataloader):
-#         super().__init__()
-#         #initialization of the parameters -> all taken from the config.yaml file, where has been created a map[key, value] of hyperparameters
-#         self.model = model
-#         self.device = self.model.betas.device
-#         self.train_num_steps = config['solver']['max_epochs']
-#         self.gradient_accumulate_every = config['solver']['gradient_accumulate_every']
-#         self.save_cycle = config['solver']['save_cycle']
-#         self.dl = cycle(dataloader['dataloader'])
-#         self.step = 0
-#         self.milestone = 0
-#         self.args = args
-
-#         #save the checkpoints in the specified folder in the config file
-#         self.results_folder = Path(config['solver']['results_folder'] + f'_{model.seq_length}')
-#         os.makedirs(self.results_folder, exist_ok=True)
-
-#         start_lr = config['solver'].get('base_lr', 1.0e-4)      #initial learning rate for the optimizer
-#         ema_decay = config['solver']['ema']['decay']        #decay rate for the exponential moving average
-#         ema_update_every = config['solver']['ema']['update_interval']       #n_steps between each update of the EMA
-
-#         # Adam optimizer
-#         self.opt = Adam(filter(lambda p: p.requires_grad, self.model.parameters()), lr=start_lr, betas=[0.9, 0.96])
-#         # Exponential moving average
-#         self.ema = EMA(self.model, beta=ema_decay, update_every=ema_update_every).to(self.device)
-
-#         sc_cfg = config['solver']['scheduler']
-#         sc_cfg['params']['optimizer'] = self.opt
-#         self.sch = create_instance_from_config(sc_cfg)
-
 class Trainer(object):
     def __init__(self, model, dataloader, device, train_num_steps, gradient_accumulate_every, save_cycle, results_folder, start_lr, ema_decay, ema_update_every, sc_cfg):
         super().__init__()
@@ -156,6 +125,7 @@ class Trainer(object):
     #restore the model
     #used for imputation
     def restore(self, raw_dataloader, shape=None, coef=1e-1, stepsize=1e-1, sampling_steps=50):
+        set_seed(1234)
         model_kwargs = {}
         model_kwargs['coef'] = coef
         model_kwargs['learning_rate'] = stepsize

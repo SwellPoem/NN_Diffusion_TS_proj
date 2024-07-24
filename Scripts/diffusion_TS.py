@@ -9,15 +9,8 @@ from functools import partial
 from Scripts.transformer_model import Transformer
 from Scripts.utility_func import default, identity, extract
 
-# helper functions to generate beta schedules
+# helper function to generate beta schedules
 # taken from original code
-# linear beta schedule
-def linear_beta_schedule(timesteps):
-    scale = 1000 / timesteps
-    beta_start = scale * 0.0001
-    beta_end = scale * 0.02
-    return torch.linspace(beta_start, beta_end, timesteps, dtype=torch.float64)
-
 # cosine beta schedule
 def cosine_beta_schedule(timesteps, s=0.008):
     """
@@ -47,9 +40,7 @@ class Diffusion_TS(nn.Module):
                                  max_len=seq_length, embd_dim=d_model, conv_params=[kernel_size, padding_size])
 
         #initialize beta schedule for the diffusion process
-        if beta_schedule == 'linear':
-            betas = linear_beta_schedule(timesteps)
-        elif beta_schedule == 'cosine':
+        if beta_schedule == 'cosine':
             betas = cosine_beta_schedule(timesteps)
         else:
             raise ValueError(f'unknown beta schedule {beta_schedule}')
@@ -337,7 +328,7 @@ class Diffusion_TS(nn.Module):
 
         return img
 
-    #for imputation task
+    #for imputation or forecasting tasks
     #generates a sample from the model by iteratively updating an image based on the model's predictions and a tensor of random noise
     #input: shape -> shape of the sample to be generated, target -> target, partial_mask -> mask for missing values
     #output: sample generated from the model

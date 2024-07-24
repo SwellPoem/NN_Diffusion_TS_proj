@@ -18,7 +18,7 @@ class CustomDataset(Dataset):
         name,
         data_root, 
         window=64, 
-        proportion=0.8, 
+        proportion= None, 
         save2npy=True, 
         neg_one_to_one=True,
         seed=123,
