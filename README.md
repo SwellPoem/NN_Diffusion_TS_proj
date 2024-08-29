@@ -77,6 +77,6 @@ NN_Diffusion_TS_proj/
 ```
 
 ### Aknowledgements
-Diffusion-TS: Interpretable Diffusion for General Time Series Generation: https://github.com/Y-debug-sys/Diffusion-TS
-Codebase for "Time-series Generative Adversarial Networks (TimeGAN)": https://github.com/jsyoon0823/TimeGAN
+- Diffusion-TS: Interpretable Diffusion for General Time Series Generation: https://github.com/Y-debug-sys/Diffusion-TS
+- Codebase for "Time-series Generative Adversarial Networks (TimeGAN)": https://github.com/jsyoon0823/TimeGAN
 
