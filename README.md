@@ -1,5 +1,5 @@
 ## NN_Diffusion_TS_proj
-The repository is a re-implementation of the paper 'Diffusion-TS: interpretable diffusion for general time series generation'.
+The repository is a re-implementation of the paper <b>Diffusion-TS: interpretable diffusion for general time series generation</b>.
 
 ### Data preparation
 Three important folders can be obtained from the [Google Drive](https://drive.google.com/drive/folders/1YlfhfQs5-iQzQy4fS0zq-mzH9I_IMTWW?usp=sharing) folder:
