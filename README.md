@@ -15,6 +15,7 @@ The libraries needed for the proper functioning of the repo are provided as a ``
 The code have been tested in a virtual envoronment with Python 3.9.19.
 
 ### Directory structure
+The directory structure comprises also the folders from Google Drive.
 ``` bash
 NN_Diffusion_TS_proj/
 │
@@ -74,3 +75,7 @@ NN_Diffusion_TS_proj/
 ├── requirements.txt
 └──README.md
 ```
+
+### Aknowledgements
+https://github.com/Y-debug-sys/Diffusion-TS
+
