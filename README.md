@@ -1,5 +1,18 @@
-# NN_Diffusion_TS_proj
+## NN_Diffusion_TS_proj
 The repository is a re-implementation of the paper 'Diffusion-TS: interpretable diffusion for general time series generation'.
+
+### Data preparation
+Three important folders can be obtained from the [Google Drive](https://drive.google.com/drive/folders/1YlfhfQs5-iQzQy4fS0zq-mzH9I_IMTWW?usp=sharing) folder:
+- download <b>dataset.zip</b>, then unzip and copy it in the folder ```./Data```.
+- download <b>energy.zip</b>, then unzip and copy it in the folder ```./output```.
+- download <b>TimeGAN_output.zip</b>, then unzip and copy it in the repo folder. 
+
+### Run the code
+The project can be run by the notebook ```main.ipynb``` present in the repo. In the notebook are presented 3 experiment in order to show the performance and the results of the implemented work.
+
+### Environment
+The libraries needed for the proper functioning of the repo are provided as a ```requirements.txt```. 
+The code have been tested in a virtual envoronment with Python 3.9.19.
 
 ### Directory structure
 ``` bash
