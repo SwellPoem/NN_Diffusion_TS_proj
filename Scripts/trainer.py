@@ -14,21 +14,21 @@ from Scripts.utility_func import create_instance_from_config, set_seed
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 
-def cycle(dl):
+def epoch(dl):
     while True:
         for data in dl:
             yield data
 
 class Trainer(object):
-    def __init__(self, model, dataloader, device, train_num_steps, gradient_accumulate_every, save_cycle, results_folder, start_lr, ema_decay, ema_update_every, sc_cfg):
+    def __init__(self, model, dataloader, device, train_num_steps, gradient_accumulate_every, save_epoch, results_folder, start_lr, ema_decay, ema_update_every, sc_cfg):
         super().__init__()
         #initialization of the parameters
         self.model = model
         self.device = device
         self.train_num_steps = train_num_steps
         self.gradient_accumulate_every = gradient_accumulate_every
-        self.save_cycle = save_cycle
-        self.dl = cycle(dataloader['dataloader'])
+        self.save_epoch = save_epoch
+        self.dl = epoch(dataloader['dataloader'])
         self.step = 0
         self.milestone = 0
 
@@ -69,44 +69,91 @@ class Trainer(object):
         self.ema.load_state_dict(data['ema'])
         self.milestone = milestone
 
+    # #train the model
+    # def train(self, seed):
+    #     set_seed(seed)
+    #     device = self.device
+    #     #training step counter initialization
+    #     step = 0
+
+    #     #main loop
+    #     with tqdm(initial=step, total=self.train_num_steps) as pbar:
+    #         while step < self.train_num_steps:
+    #             total_loss = 0.     #initialize the total loss
+    #             for _ in range(self.gradient_accumulate_every):
+    #                 data = next(self.dl).to(device)     #get the next batch of data
+    #                 loss = self.model(data, target=data)        #compute the loss on the current batch
+    #                 loss = loss / self.gradient_accumulate_every        #average the loss over the gradient_accumulate_every steps
+    #                 loss.backward()     #compute gradients of the loss w.r.t. the model parameters
+    #                 total_loss += loss.item()       #update the total loss
+
+    #             pbar.set_description(f'loss: {total_loss:.6f}')
+
+    #             #prevent exploding gradients
+    #             clip_grad_norm_(self.model.parameters(), 1.0)
+    #             self.opt.step()     #optimization step -> Adam optimizer
+    #             self.sch.step(total_loss)       #scheduler step
+    #             self.opt.zero_grad()        #reset gradients
+    #             self.step += 1      #update global step counter
+    #             step += 1       #update local step counter
+    #             self.ema.update()
+
+    #             #if the current step is a multiple of the save_epoch, save the current state of the training
+    #             with torch.no_grad():
+    #                 if self.step != 0 and self.step % self.save_epoch == 0:
+    #                     self.milestone += 1
+    #                     self.save(self.milestone)
+
+    #             pbar.update(1)
+
+    #     print('training complete')
+
     #train the model
     def train(self, seed):
         set_seed(seed)
-        device = self.device
-        #training step counter initialization
-        step = 0
+        self._initialize_training()
 
-        #main loop
-        with tqdm(initial=step, total=self.train_num_steps) as pbar:
-            while step < self.train_num_steps:
-                total_loss = 0.     #initialize the total loss
-                for _ in range(self.gradient_accumulate_every):
-                    data = next(self.dl).to(device)     #get the next batch of data
-                    loss = self.model(data, target=data)        #compute the loss on the current batch
-                    loss = loss / self.gradient_accumulate_every        #average the loss over the gradient_accumulate_every steps
-                    loss.backward()     #compute gradients of the loss w.r.t. the model parameters
-                    total_loss += loss.item()       #update the total loss
+        with tqdm(initial=self.step, total=self.train_num_steps) as pbar:
+            while self.step < self.train_num_steps:
+                total_loss = self._compute_loss(pbar)
 
-                pbar.set_description(f'loss: {total_loss:.6f}')
-
-                #prevent exploding gradients
-                clip_grad_norm_(self.model.parameters(), 1.0)
-                self.opt.step()     #optimization step -> Adam optimizer
-                self.sch.step(total_loss)       #scheduler step
-                self.opt.zero_grad()        #reset gradients
-                self.step += 1      #update global step counter
-                step += 1       #update local step counter
-                self.ema.update()
-
-                #if the current step is a multiple of the save_cycle, save the current state of the training
-                with torch.no_grad():
-                    if self.step != 0 and self.step % self.save_cycle == 0:
-                        self.milestone += 1
-                        self.save(self.milestone)
+                self._update_model(total_loss)
+                self._check_save_model()
 
                 pbar.update(1)
 
         print('training complete')
+
+    #training step counter initialization
+    def _initialize_training(self):
+        self.step = 0
+
+    def _compute_loss(self, pbar):
+        total_loss = 0.
+        for _ in range(self.gradient_accumulate_every):
+            data = next(self.dl).to(self.device)    #get the next batch of data
+            loss = self.model(data, target=data)    #compute the loss on the current batch
+            loss = loss / self.gradient_accumulate_every    #average the loss over the gradient_accumulate_every steps
+            loss.backward()     #compute gradients of the loss w.r.t. the model parameters
+            total_loss += loss.item()        #update the total loss
+
+        pbar.set_description(f'loss: {total_loss:.6f}')
+        return total_loss
+
+    #prevent exploding gradients
+    def _update_model(self, total_loss):
+        clip_grad_norm_(self.model.parameters(), 1.0)
+        self.opt.step()
+        self.sch.step(total_loss)
+        self.opt.zero_grad()
+        self.step += 1
+
+    #if the current step is a multiple of the save_epoch, save the current state of the training
+    def _check_save_model(self):
+        with torch.no_grad():
+            if self.step != 0 and self.step % self.save_epoch == 0:
+                self.milestone += 1
+                self.save(self.milestone)
 
     #sample from the model
     def sample(self, num, size_every, shape=None):
@@ -123,7 +170,7 @@ class Trainer(object):
         return samples
 
     #restore the model
-    #used for imputation
+    #used for forecasting
     def restore(self, raw_dataloader, shape=None, coef=1e-1, stepsize=1e-1, sampling_steps=50):
         set_seed(1234)
         model_kwargs = {}

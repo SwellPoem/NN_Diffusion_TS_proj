@@ -169,21 +169,3 @@ class CustomDataset(Dataset):
 
     def __len__(self):
         return self.sample_num
-    
-
-class fMRIDataset(CustomDataset):
-    def __init__(
-        self, 
-        proportion=1., 
-        **kwargs
-    ):
-        super().__init__(proportion=proportion, **kwargs)
-
-    @staticmethod
-    def read_data(filepath, name=''):
-        """Reads a single .csv
-        """
-        data = io.loadmat(filepath + '/sim4.mat')['ts']
-        scaler = MinMaxScaler()
-        scaler = scaler.fit(data)
-        return data, scaler

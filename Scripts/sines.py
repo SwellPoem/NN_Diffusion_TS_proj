@@ -28,32 +28,32 @@ class CreateDataset(Dataset):
     def data_generation(no, seq_len, dim, seed=123):
         st0 = np.random.get_state()
         set_seed(seed)
-        local_data, global_data = list(), list()
+        data_1, data_2 = list(), list()
         for i in tqdm(range(0, no), total=no, desc="Sampling Data"):
             local, glob = list(), list()
             for k in range(dim):
-                a = np.random.uniform(0, 1)            
-                b = np.random.uniform(0, 1)
-                c = np.random.uniform(0.1, 0.5)
-                e = np.random.uniform(1, 3)
+                coeff_a = np.random.uniform(0, 1)            
+                coeff_b = np.random.uniform(0, 1)
+                coeff_c = np.random.uniform(0.1, 0.5)
+                coeff_d = np.random.uniform(1, 3)
 
-                temp_data1 = [c * (np.sin(0.2 * np.pi * j * (k+1) + a) + 2 * np.sin(0.1 * np.pi * j * (k+1) + b)) for j in range(seq_len)]
+                temp_data1 = [coeff_c * (np.sin(0.2 * np.pi * j * (k+1) + coeff_a) + 2 * np.sin(0.1 * np.pi * j * (k+1) + coeff_b)) for j in range(seq_len)]
 
                 signal = np.random.uniform(0, 1)
                 if signal > 0.5:
-                    temp_data2 = [e * np.sin(0.001 * np.pi * j) for j in range(seq_len)]
+                    temp_data2 = [coeff_d * np.sin(0.001 * np.pi * j) for j in range(seq_len)]
                 else:
-                    temp_data2 = [- e * np.sin(0.001 * np.pi * j) for j in range(seq_len)]
+                    temp_data2 = [- coeff_d * np.sin(0.001 * np.pi * j) for j in range(seq_len)]
 
                 local.append(temp_data1)
                 glob.append(temp_data2)
 
             local = np.transpose(np.asarray(local))
-            local_data.append(local)
+            data_1.append(local)
             glob = np.transpose(np.asarray(glob))
-            global_data.append(glob)
+            data_2.append(glob)
 
         np.random.set_state(st0)
-        local_data = np.array(local_data)
-        global_data = np.array(global_data)
-        return local_data, global_data
+        data_1 = np.array(data_1)
+        data_2 = np.array(data_2)
+        return data_1, data_2

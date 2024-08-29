@@ -80,7 +80,6 @@ class PositionalEmbedding(nn.Module):
         return sinusoidal_embedding
     
 
-# Remember to change the calling since now needs two arguments that are the dimensions and no more the shape
 # transpose the dimensions of a tensor
 # input: dim
 # output: transposed tensor
@@ -97,6 +96,8 @@ class TensorTranspose(nn.Module):
 
 # GELU2 function
 # modified GELU activation function
+# not use of tanh, but instead use the sigmoid function
+# computationally cheaper
 class GELU2(nn.Module):
     def forward(self, x):
         return x * torch.sigmoid(1.702 * x)
@@ -128,7 +129,6 @@ class MovingAverage(nn.Module):
         self.average_pool = nn.AvgPool1d(kernel_size=window_size, stride=step_size, padding=0)
 
     def forward(self, input_tensor):
-        # pad the time series on both ends
         padding_front = input_tensor[:, 0:1, :].repeat(1, self.window_size - 1 - (self.window_size - 1) // 2, 1)
         padding_end = input_tensor[:, -1:, :].repeat(1, (self.window_size - 1) // 2, 1)
         padded_input = torch.cat([padding_front, input_tensor, padding_end], dim=1)

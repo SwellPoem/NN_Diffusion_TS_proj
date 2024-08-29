@@ -15,13 +15,13 @@ def get_dataloader_common(config, dataset_key, batch_size_key, shuffle, save_dir
 
     return dataload_info
 
+#dataloader for unconditional sampling
 def get_dataloader(config, save_dir=None):
     return get_dataloader_common(config, 'train_dataset', 'batch_size', True, save_dir)
 
-def get_dataloader_cond(config, mode=None, missing_ratio=None, pred_len=None, save_dir=None):
-    if mode == 'infill':
-        config['dataloader']['test_dataset']['params']['missing_ratio'] = missing_ratio
-    elif mode == 'predict':
+#data loader for conditional sampling
+def get_dataloader_cond(config, mode=None, pred_len=None, save_dir=None):
+    if mode == 'predict':
         config['dataloader']['test_dataset']['params']['predict_length'] = pred_len
 
     return get_dataloader_common(config, 'test_dataset', 'sample_size', False, save_dir)
