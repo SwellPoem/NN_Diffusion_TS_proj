@@ -8,7 +8,7 @@ Three important folders can be obtained from the [Google Drive](https://drive.go
 - download <b>TimeGAN_output.zip</b>, then unzip and copy it in the repo folder. 
 
 ### Run the code
-The project can be run by the notebook ```main.ipynb``` present in the repo. In the notebook are presented 3 experiment in order to show the performance and the results of the implemented work.
+The project can be run by the notebook ```main.ipynb``` present in the repo. In the notebook 3 experiments are presented in order to show the performance and the results of the implemented work.
 
 ### Environment
 The libraries needed for the proper functioning of the repo are provided as a ```requirements.txt```. 
